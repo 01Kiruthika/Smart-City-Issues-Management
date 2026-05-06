@@ -51,9 +51,16 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    animation: bgShift 18s ease infinite;
+    /* animation: bgShift 18s ease infinite; */
     position: relative;
     overflow: hidden;
+    background:
+        linear-gradient(rgba(44, 22, 4, 0.65), rgba(44, 22, 4, 0.75)),
+        url("../src/Images/Backgroundimg.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 @keyframes bgShift {
@@ -165,7 +172,7 @@
 .input-group {
     position: relative;
     width: 100%;
-    
+
 }
 
 /* Label default (inside input) */
@@ -180,7 +187,7 @@
     background: transparent;
     pointer-events: none;
     transition: all 0.25s ease;
-    
+
 }
 
 /* Input base */
@@ -195,7 +202,7 @@
     outline: none;
     background: var(--cream-dark);
     transition: all 0.25s ease;
-   
+
 }
 
 /* Focus input */
@@ -207,10 +214,10 @@
 }
 
 /*  FLOAT LABEL WHEN FOCUS OR HAS VALUE */
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label,
-.input-group select:focus + label,
-.input-group select:valid + label {
+.input-group input:focus+label,
+.input-group input:not(:placeholder-shown)+label,
+.input-group select:focus+label,
+.input-group select:valid+label {
     top: -8px;
     font-size: 11px;
     font-weight: 600;

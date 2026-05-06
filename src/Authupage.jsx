@@ -86,6 +86,7 @@ const Authupage = () => {
 
   return (
     <div className="main-container">
+    
       <div className={`container ${active ? "active" : ""}`}>
 
         {/* ===== LOGIN FORM (LEFT side) ===== */}
