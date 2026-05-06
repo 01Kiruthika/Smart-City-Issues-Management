@@ -1,4 +1,3 @@
-
 /* ===== Complaint Card ===== */
 .complcard {
     position: relative;
@@ -21,18 +20,19 @@
 
 /* ===== IMAGE ===== */
 .cards-image {
+    position: absolute;
     inset: 0;
     width: 240px;
     height: 200px;
 }
 
-.cards-imgage img {
+.cards-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-/* ===== VIEW BUTTON (Updated from BLUE → ORANGE) ===== */
+/* ===== VIEW BUTTON ===== */
 .view-btn {
     position: absolute;
     top: 10px;
@@ -69,17 +69,19 @@
     color: #ffffff;
 }
 
-/* ===== TITLE ===== */
-.title {
+/* ===== TITLE (ONLY CARD ELLIPSIS) ===== */
+.complcard .title {
     font-size: 14px;
     font-weight: 700;
     color: #ffffff;
     line-height: 1.3;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+
+    max-width: 200px;
 }
 
 /* ===== LOCATION & DATE ===== */
@@ -94,7 +96,7 @@
 }
 
 .icon {
-    color: #FDBA74; /* soft orange */
+    color: #FDBA74;
     font-size: 14px;
 }
 
@@ -110,19 +112,6 @@
     letter-spacing: 0.5px;
 }
 
-/* Status Colors */
-.status.pending {
-    background: #F59E0B;
-}
-
-.status.progress {
-    background: #EA580C;
-}
-
-.status.resolved {
-    background: #16A34A;
-}
-
 /* ===== MODAL ===== */
 .modal-overlay {
     position: fixed;
@@ -136,7 +125,6 @@
     padding: 20px;
 }
 
-/* ===== MODAL CONTENT ===== */
 .modal-content {
     background: #FFF7ED;
     border-radius: 18px;
@@ -148,12 +136,16 @@
     box-shadow: 0 24px 48px rgba(194, 65, 12, 0.25);
 }
 
-/* ===== MODAL TITLE ===== */
+/* ===== MODAL TITLE (NO ELLIPSIS) ===== */
 .modal-title {
     font-size: 22px;
     font-weight: 700;
     color: #7C2D12;
     margin-bottom: 16px;
+
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
 }
 
 /* ===== MODAL IMAGE ===== */
