@@ -667,24 +667,6 @@
     }
 }
 
-/* Success message */
-.cm-message:has-content("✅"),
-.cm-message[style*="color: rgb(34, 197, 94)"],
-.cm-message:not(:has-content("❌")) {
-    color: hsl(142 76% 36%);
-    background: hsl(142 76% 94%);
-    border: 1px solid hsl(142 76% 80%);
-}
-
-/* Error message */
-.cm-message:has-content("❌"),
-.cm-message[style*="color: rgb(239, 68, 68)"] {
-    color: hsl(0 84% 60%);
-    background: hsl(0 84% 95%);
-    border: 1px solid hsl(0 84% 80%);
-}
-
-/* Target by first character fallback */
 
 .cm-message {
     color: hsl(0 84% 60%);
@@ -693,12 +675,7 @@
     backdrop-filter: blur(8px);
 }
 
-/* Success override - when message doesn't contain error indicator */
-.cm-message:not([class*="error"]) {
-    color: hsl(142 76% 36%);
-    background: hsl(142 76% 94% / 0.8);
-    border: 1px solid hsl(142 76% 80%);
-}
+
 
 /* ===== RESPONSIVE - TABLET (768px) ===== */
 @media (max-width: 768px) {
