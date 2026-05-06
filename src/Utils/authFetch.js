@@ -15,6 +15,15 @@ const authFetch = async (url, options = {}) => {
     headers,
   });
 
+  // HANDLE TOKEN EXPIRY PROPERLY
+  if (response.status === 401) {
+    console.log("Token expired or invalid");
+
+    localStorage.removeItem("token");
+
+    window.location.href = "/login"; // force logout only here
+  }
+
   return response;
 };
 
