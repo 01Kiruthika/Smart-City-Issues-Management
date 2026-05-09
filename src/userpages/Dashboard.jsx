@@ -30,9 +30,12 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchComplaints();
-    const interval = setInterval(fetchComplaints, 3000);
-    return () => clearInterval(interval);
+    setTimeout(() => {
+       fetchComplaints();
+    }, 1000);
+   
+    // const interval = setInterval(fetchComplaints, 3000);
+    // return () => clearInterval(interval);
   }, []);
 
   // Counts

@@ -7,8 +7,9 @@ import API from "../Backendurl.jsx";
 
 const Dashboard = () => {
   const [complaints, setComplaints] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [managers, setManagers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalManagers, setTotalManagers] = useState(0);
+  const [totalComplaints, setTotalComplaints] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,31 +17,42 @@ const Dashboard = () => {
   }, []);
 
   const fetchData = async () => {
+
     try {
-      const [compRes, userRes, managerRes] = await Promise.all([
-        authFetch(`${API.BASE_URL}/complaint`),
-        authFetch(`${API.BASE_URL}/users`),
-        authFetch(`${API.BASE_URL}/manager`),
-      ]);
 
-      const compData = await compRes.json();
-      const userData = await userRes.json();
-      const managerData = await managerRes.json();
+      const res = await authFetch(
+        `${API.BASE_URL}/dashboard`
+      );
 
-      setComplaints(compData.response || []);
-      setUsers(userData.response || []);
-      setManagers(managerData.response || []);
+      const data = await res.json();
+
+      const dashboard = data.response;
+
+      setComplaints(dashboard.complaints || []);
+
+      setTotalComplaints(
+        dashboard.totalComplaints || 0
+      );
+
+      setTotalUsers(
+        dashboard.totalUsers || 0
+      );
+
+      setTotalManagers(
+        dashboard.totalManagers || 0
+      );
+
     } catch (err) {
+
       console.error("Fetch Error:", err);
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
-  // TOTAL COUNTS
-  const totalComplaints = complaints.length;
-  const totalUsers = users.length;
-  const totalManagers = managers.length;
 
   // EMPTY CHECK
   const isEmpty =
