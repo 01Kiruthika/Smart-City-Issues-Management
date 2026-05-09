@@ -155,11 +155,6 @@ const CreateManager = () => {
         navigate("/app/users");
 
       }
-
-      // =========================
-      // FAILED
-      // =========================
-
       else {
 
         toast.error(
