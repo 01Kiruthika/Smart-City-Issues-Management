@@ -28,6 +28,7 @@ import { toast } from "react-toastify";
 
 
 
+
 const Reportissue = () => {
 
   const { currentUserName } =
@@ -61,8 +62,6 @@ const Reportissue = () => {
   const fileInputRef =
     useRef(null);
 
-
-
   // LOAD EDIT DATA
   useEffect(() => {
 
@@ -92,8 +91,6 @@ const Reportissue = () => {
 
   }, [locationData.state]);
 
-
-
   // SUBMIT FUNCTION
   const handleSubmit = async (e) => {
 
@@ -102,10 +99,24 @@ const Reportissue = () => {
     // PREVENT MULTIPLE CLICKS
     if (submitting) return;
 
+    // VALIDATION
+    if (!title.trim()) {
+      toast.warning("Issue title is required");
+      return;
+    }
+
+    if (!location.trim()) {
+      toast.warning("Location is required");
+      return;
+    }
+
     setSubmitting(true);
 
     const token =
       localStorage.getItem("token");
+
+    const storedUserName =
+      localStorage.getItem("name");
 
     if (!userId || !token) {
 
@@ -120,9 +131,13 @@ const Reportissue = () => {
       return;
     }
 
+    // SEND USER NAME ALSO
     const complaintData = {
 
       user_id: userId,
+
+      user_name:
+        storedUserName || currentUserName,
 
       title,
 
@@ -153,6 +168,11 @@ const Reportissue = () => {
         await authFetch(url, {
 
           method,
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
 
           body: JSON.stringify(
             complaintData
@@ -208,8 +228,6 @@ const Reportissue = () => {
     }
   };
 
-
-
   return (
 
     <>
@@ -224,8 +242,6 @@ const Reportissue = () => {
 
       </div>
 
-
-
       <div className="report-wrapper">
 
         <div className="report-card">
@@ -235,8 +251,6 @@ const Reportissue = () => {
             <h3 className="report-subtitle">
               Describe the Problem
             </h3>
-
-
 
             {/* VOICE INPUT */}
             <div className="voice-row">
@@ -248,8 +262,6 @@ const Reportissue = () => {
               />
 
             </div>
-
-
 
             {/* ISSUE TITLE */}
             <input
@@ -263,8 +275,6 @@ const Reportissue = () => {
               required
             />
 
-
-
             {/* LOCATION */}
             <input
               type="text"
@@ -277,8 +287,6 @@ const Reportissue = () => {
               required
             />
 
-
-
             {/* CAMERA SECTION */}
             <div className="camera-section">
 
@@ -286,13 +294,9 @@ const Reportissue = () => {
                 Upload proof of the issue
               </p>
 
-
-
               <Cameracapture
                 setImage={setImage}
               />
-
-
 
               {/* IMAGE PREVIEW */}
               {image && (
@@ -312,8 +316,6 @@ const Reportissue = () => {
               )}
 
             </div>
-
-
 
             {/* SUBMIT BUTTON */}
             <button
