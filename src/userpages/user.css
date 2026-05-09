@@ -347,6 +347,13 @@ body {
     box-shadow: var(--shadow-md);
 }
 
+.submit-btn:disabled {
+
+    opacity: 0.7;
+
+    cursor: not-allowed;
+}
+
 /* ─── Camera Capture Component ───────────────── */
 
 .camera-wrapper {
@@ -981,8 +988,9 @@ body {
     .track-dropdown {
         width: 100%;
     }
-    .chart-box{
+
+    .chart-box {
         /* border: 5px solid red; */
-        width: auto ;
+        width: auto;
     }
 }

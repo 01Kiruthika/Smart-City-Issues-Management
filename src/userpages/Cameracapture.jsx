@@ -93,7 +93,10 @@ const Cameracapture = ({ setImage }) => {
     ctx.drawImage(video, 0, 0);
 
     const imageData =
-      canvas.toDataURL("image/png");
+      canvas.toDataURL(
+        "image/jpeg",
+        0.5
+      );
 
     // SAVE IMAGE
     setCapturedImage(imageData);
