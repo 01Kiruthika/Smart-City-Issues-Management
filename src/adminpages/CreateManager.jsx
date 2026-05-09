@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import "./admin.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import authFetch from "../Utils/authFetch.js";
-import emailjs from "@emailjs/browser";
-import API from "../Backendurl.jsx"
+import API from "../Backendurl.jsx";
 import { toast } from "react-toastify";
 
 const CreateManager = () => {
+
   const location = useLocation();
+
   const navigate = useNavigate();
 
   const editData = location.state?.manager;
@@ -22,9 +23,14 @@ const CreateManager = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // Fill form when editing
+  // =========================
+  // FILL EDIT DATA
+  // =========================
+
   useEffect(() => {
+
     if (editData) {
+
       setFormData({
         name: editData.name || "",
         address: editData.address || "",
@@ -32,110 +38,174 @@ const CreateManager = () => {
         email: editData.email || "",
         password: ""
       });
+
     }
+
   }, [editData]);
 
+  // =========================
+  // HANDLE INPUT
+  // =========================
+
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+
   };
 
+  // =========================
+  // SUBMIT
+  // =========================
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
+    // PHONE VALIDATION
     if (formData.phonenumber.length !== 10) {
+
       toast.error("Phone number must be 10 digits");
+
       return;
     }
 
-    if (!editData && !formData.password) {
-      toast.error("Password is required for new manager");
+    // PASSWORD VALIDATION
+    if (!editData && formData.password.length < 8) {
+
+      toast.error(
+        "Password must be at least 8 characters"
+      );
+
       return;
     }
 
     try {
+
       setLoading(true);
 
       let res;
 
-      // UPDATE
+      // =========================
+      // UPDATE MANAGER
+      // =========================
+
       if (editData) {
-        res = await authFetch(`${API.BASE_URL}/manager/${editData._id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(formData)
-        });
-      }
-      // CREATE
-      else {
-        res = await authFetch(`${API.BASE_URL}/manager`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData)
-        });
+
+        res = await authFetch(
+          `${API.BASE_URL}/manager/${editData._id}`,
+          {
+            method: "PUT",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(formData)
+          }
+        );
+
       }
 
-      // safer JSON handling
+      // =========================
+      // CREATE MANAGER
+      // =========================
+
+      else {
+
+        res = await authFetch(
+          `${API.BASE_URL}/manager`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(formData)
+          }
+        );
+
+      }
+
       let data = {};
+
       try {
+
         data = await res.json();
-      } catch { }
+
+      } catch (err) {
+        console.log(err);
+      }
+
+      // =========================
+      // SUCCESS
+      // =========================
 
       if (res.ok) {
 
-        // Send email only when creating
-        if (!editData) {
-          try {
-            await emailjs.send(
-              "service_909i4zn",
-              "template_t64qt6k",
-              {
-                name: formData.name,
-                email: formData.email,
-                password: formData.password
-              },
-              "zqUfWoQbJx9clo0Qp"
-            );
-
-            toast.success("Manager created & Welcome email sent");
-
-          } catch (emailError) {
-            console.error("Email failed:", emailError);
-            toast.error("Manager created but email failed");
-          }
-        } else {
-          toast.success("Manager updated successfully");
-        }
+        toast.success(
+          editData
+            ? "Manager updated successfully"
+            : "Manager created successfully & Email sent"
+        );
 
         navigate("/app/users");
 
-      } else {
-        toast.error(data.message || "Error");
+      }
+
+      // =========================
+      // FAILED
+      // =========================
+
+      else {
+
+        toast.error(
+          data.message || "Something went wrong"
+        );
+
       }
 
     } catch (err) {
+
       console.error(err);
-      toast.error("Server error");
+
+      toast.error("Server Error");
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
   return (
+
     <div className="cm-container">
+
       <div className="cm-card">
+
         <h2 className="cm-title">
-          {editData ? "Edit Manager" : "Create Manager"}
+
+          {editData
+            ? "Edit Manager"
+            : "Create Manager"}
+
         </h2>
 
-        <form onSubmit={handleSubmit} className="cm-form">
+        <form
+          onSubmit={handleSubmit}
+          className="cm-form"
+        >
+
+          {/* NAME */}
 
           <div className="cm-field">
+
             <label>Name</label>
+
             <input
               type="text"
               name="name"
@@ -143,10 +213,15 @@ const CreateManager = () => {
               onChange={handleChange}
               required
             />
+
           </div>
 
+          {/* ADDRESS */}
+
           <div className="cm-field">
+
             <label>Address</label>
+
             <input
               type="text"
               name="address"
@@ -154,10 +229,15 @@ const CreateManager = () => {
               onChange={handleChange}
               required
             />
+
           </div>
 
+          {/* EMAIL */}
+
           <div className="cm-field">
+
             <label>Email</label>
+
             <input
               type="email"
               name="email"
@@ -165,10 +245,15 @@ const CreateManager = () => {
               onChange={handleChange}
               required
             />
+
           </div>
 
+          {/* PHONE */}
+
           <div className="cm-field">
+
             <label>Phone Number</label>
+
             <input
               type="text"
               name="phonenumber"
@@ -176,29 +261,48 @@ const CreateManager = () => {
               onChange={handleChange}
               required
             />
+
           </div>
 
+          {/* PASSWORD */}
+
           <div className="cm-field">
+
             <label>Password</label>
+
             <input
               type="password"
               name="password"
-              placeholder={editData ? "Leave blank to keep same password" : ""}
+              placeholder={
+                editData
+                  ? "Leave blank to keep same password"
+                  : "Enter Password"
+              }
               value={formData.password}
               onChange={handleChange}
             />
+
           </div>
 
-          <button type="submit" disabled={loading}>
+          {/* BUTTON */}
+
+          <button
+            type="submit"
+            disabled={loading}
+          >
+
             {loading
               ? "Processing..."
               : editData
                 ? "Update Manager"
                 : "Create Manager"}
+
           </button>
 
         </form>
+
       </div>
+
     </div>
   );
 };
