@@ -14,14 +14,13 @@ const Dashboard = () => {
     try {
       const userId = localStorage.getItem("userId");
 
-      const res = await authFetch(`${API.BASE_URL}/complaint`);
-      const data = await res.json();
-
-      const userComplaints = (data.response || []).filter(
-        (c) => c.user_id == userId
+      const res = await authFetch(
+        `${API.BASE_URL}/mycomplaints`
       );
 
-      setComplaints(userComplaints);
+      const data = await res.json();
+
+      setComplaints(data.response || []);
     } catch (error) {
       console.log("Error fetching complaints:", error);
     } finally {
@@ -30,7 +29,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-       fetchComplaints();
+    fetchComplaints();
   }, []);
 
   // Counts
