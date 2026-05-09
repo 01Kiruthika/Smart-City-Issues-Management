@@ -49,7 +49,7 @@ const Header = () => {
 
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role"); // ✅ NEW
+  const role = localStorage.getItem("role");
 
   const [state, dispatch] = useReducer(reducer, {
     ...initialState,
@@ -72,59 +72,52 @@ const Header = () => {
   }, []);
 
   const fetchUserDetails = async () => {
+
     try {
-      let endpoint = "";
 
-      // ✅ ROLE-BASED API
-      if (role === "admin") {
-        endpoint = `${API.BASE_URL}/admin`;
-      } else if (role === "manager") {
-        endpoint = `${API.BASE_URL}/manager`;
-      } else {
-        endpoint = `${API.BASE_URL}/users`;
-      }
-
-      const res = await fetch(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetch(
+        `${API.BASE_URL}/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await res.json();
 
-      console.log("API Response:", data);
+      console.log("Profile Data:", data);
 
-      const list = data.response || data.users || data;
-
-      if (!Array.isArray(list)) {
-        console.error("Data is not an array:", list);
-        return;
-      }
-
-      // ✅ SAFE MATCH
-      const currentUser = list.find(
-        (u) => String(u._id) === String(userId)
-      );
+      const currentUser = data.response;
 
       if (currentUser) {
-        dispatch({ type: "SET_NAME", payload: currentUser.name });
+
+        dispatch({
+          type: "SET_NAME",
+          payload: currentUser.name,
+        });
+
         dispatch({
           type: "SET_PHONE",
           payload: currentUser.phonenumber,
         });
 
         if (currentUser.profile_image) {
+
           dispatch({
             type: "SET_IMAGE",
             payload: currentUser.profile_image,
           });
         }
-      } else {
-        console.warn("User not found in list");
+
       }
 
     } catch (err) {
-      console.error("Error fetching user:", err);
+
+      console.error(
+        "Error fetching user:",
+        err
+      );
     }
   };
 
