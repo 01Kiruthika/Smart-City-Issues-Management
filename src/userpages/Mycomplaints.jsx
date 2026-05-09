@@ -5,6 +5,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import "./user.css";
 import authFetch from "../Utils/authFetch.js";
 import API from "../Backendurl.jsx"
+import { toast } from "react-toastify";
 
 const Mycomplaints = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const Mycomplaints = () => {
       );
 
       if (res.ok) {
-        alert("Deleted Successfully");
+        toast.success("Deleted Successfully");
 
         // Remove from UI
         setComplaints((prev) =>

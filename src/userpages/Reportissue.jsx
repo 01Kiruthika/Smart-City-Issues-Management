@@ -93,7 +93,7 @@ const Reportissue = () => {
           fileInputRef.current.value = "";
         }
 
-        navigate("/app/mycomplaints");
+        
       } else {
         toast.error(data.message || "Something went wrong");
       }
