@@ -26,9 +26,6 @@ import API from "../Backendurl.jsx";
 
 import { toast } from "react-toastify";
 
-
-
-
 const Reportissue = () => {
 
   const { currentUserName } =
@@ -124,12 +121,12 @@ const Reportissue = () => {
     //     "Session expired. Please login again."
     //   );
 
-      // navigate("/");
+    //   navigate("/");
 
-      // setSubmitting(false);
+    //   setSubmitting(false);
 
-      return;
-    }
+    //   return;
+    // }
 
     // SEND USER NAME ALSO
     const complaintData = {
