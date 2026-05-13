@@ -148,10 +148,10 @@ const Authupage = () => {
     }
 
     // PASSWORD VALIDATION
-    if (state.password.length <= 5) {
+    if (state.password.length < 6) {
 
       errors.password =
-        "Password must be at least 5 characters";
+        "Password must be at least 6 characters";
     }
 
     // CONFIRM PASSWORD
@@ -266,11 +266,11 @@ const Authupage = () => {
 
     // PASSWORD VALIDATION
     if (
-      state.loginPassword.length <= 5 
+      state.loginPassword.length < 6
     ) {
 
       errors.loginPassword =
-        "Password must be at least 5 characters";
+        "Password must be at least 6 characters";
     }
 
     // ROLE VALIDATION
