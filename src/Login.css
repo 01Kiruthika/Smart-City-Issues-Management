@@ -95,6 +95,7 @@
    FORM PANELS
    ============================================ */
 .form-container {
+    /* border: 2px solid; */
     position: absolute;
     top: 0;
     height: 100%;
@@ -102,7 +103,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 50px;
+    padding: 0 30px;
     transition: all 0.7s cubic-bezier(0.65, 0, 0.35, 1);
     background: var(--cream);
 }
@@ -111,7 +112,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 13px;
 }
 
 .form-container h1 {
@@ -462,6 +463,12 @@
     color: var(--burnt-orange-dark);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(44, 22, 4, 0.25);
+}
+.error{
+    color: red;
+    font-size: 13px;
+    /* margin-top: 5px; */
+    display: block;
 }
 
 /* ============================================

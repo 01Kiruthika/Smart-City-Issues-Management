@@ -1,31 +1,114 @@
-import { useState, useContext } from "react";
+import {
+  useState,
+  useContext,
+  useReducer,
+} from "react";
+
 import { useNavigate } from "react-router-dom";
+
 import "./Login.css";
+
 import { UserName } from "./App.jsx";
+
 import API from "./Backendurl.jsx";
+
 import { toast } from "react-toastify";
+
+
+
+// ================= INITIAL STATE =================
+const initialState = {
+
+  // REGISTER
+  name: "",
+  phone: "",
+  address: "",
+  password: "",
+  confirmPassword: "",
+
+  // LOGIN
+  loginPhone: "",
+  loginPassword: "",
+  loginRole: "",
+
+  // ERRORS
+  errors: {},
+};
+
+
+
+// ================= REDUCER =================
+const reducer = (state, action) => {
+
+  switch (action.type) {
+
+    case "SET_FIELD":
+
+      return {
+
+        ...state,
+
+        [action.field]: action.value,
+      };
+
+    case "SET_ERRORS":
+
+      return {
+
+        ...state,
+
+        errors: action.payload,
+      };
+
+    case "CLEAR_REGISTER":
+
+      return {
+
+        ...state,
+
+        name: "",
+        phone: "",
+        address: "",
+        password: "",
+        confirmPassword: "",
+
+        errors: {},
+      };
+
+    case "CLEAR_LOGIN":
+
+      return {
+
+        ...state,
+
+        loginPhone: "",
+        loginPassword: "",
+        loginRole: "",
+
+        errors: {},
+      };
+
+    default:
+
+      return state;
+  }
+};
+
+
 
 const Authupage = () => {
 
   const [active, setActive] = useState(false);
 
+  const [state, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
+
   const { setCurrentUserName, setRole } =
     useContext(UserName);
 
   const navigate = useNavigate();
-
-  // ================= LOGIN STATES =================
-  const [loginPhone, setLoginPhone] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [loginRole, setLoginRole] = useState("");
-
-  // ================= REGISTER STATES =================
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] =
-    useState("");
 
 
 
@@ -34,19 +117,76 @@ const Authupage = () => {
 
     e.preventDefault();
 
-    // ONLY FRONTEND VALIDATION
-    if (password !== confirmPassword) {
+    let errors = {};
 
-      toast.warning("Passwords do not match");
+    // NAME VALIDATION
+    if (state.name.trim().length < 3) {
+
+      errors.name =
+        "Name must contain minimum 3 letters";
+    }
+
+    // PHONE VALIDATION
+
+    if (!/^\d{10}$/.test(state.phone)) {
+
+      errors.phone =
+        "Phone number must contain 10 digits";
+
+    } else if (
+      !/^[986]/.test(state.phone)
+    ) {
+
+      errors.phone =
+        "Phone number must start with 9, 8, or 6";
+    }
+    // ADDRESS VALIDATION
+    if (state.address.trim().length < 5) {
+
+      errors.address =
+        "Please enter valid address";
+    }
+
+    // PASSWORD VALIDATION
+    if (state.password.length <= 5) {
+
+      errors.password =
+        "Password must be at least 5 characters";
+    }
+
+    // CONFIRM PASSWORD
+    if (
+      state.password !==
+      state.confirmPassword
+    ) {
+
+      errors.confirmPassword =
+        "Passwords do not match";
+    }
+
+    // SET ERRORS
+    dispatch({
+      type: "SET_ERRORS",
+      payload: errors,
+    });
+
+    // STOP API IF ERROR EXISTS
+    if (
+      Object.keys(errors).length > 0
+    ) {
 
       return;
     }
 
     const userData = {
-      name,
-      phonenumber: phone,
-      address,
-      password,
+
+      name: state.name,
+
+      phonenumber: state.phone,
+
+      address: state.address,
+
+      password: state.password,
     };
 
     try {
@@ -57,7 +197,8 @@ const Authupage = () => {
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
           body: JSON.stringify(userData),
@@ -69,23 +210,21 @@ const Authupage = () => {
       if (data.status === true) {
 
         toast.success(
-          data.message || "Registration Successful"
+          data.message ||
+          "Registration Successful"
         );
 
         setActive(false);
 
-        // CLEAR FIELDS
-        setName("");
-        setPhone("");
-        setAddress("");
-        setPassword("");
-        setConfirmPassword("");
+        dispatch({
+          type: "CLEAR_REGISTER",
+        });
 
       } else {
 
-        // BACKEND ERROR MESSAGE
         toast.error(
-          data.message || "Registration Failed"
+          data.message ||
+          "Registration Failed"
         );
       }
 
@@ -104,10 +243,65 @@ const Authupage = () => {
 
     e.preventDefault();
 
+    let errors = {};
+
+    if (
+      !/^\d{10}$/.test(
+        state.loginPhone
+      )
+    ) {
+
+      errors.loginPhone =
+        "Phone number must contain 10 digits";
+
+    } else if (
+      !/^[986]/.test(
+        state.loginPhone
+      )
+    ) {
+
+      errors.loginPhone =
+        "Phone number must start with 9, 8, or 6";
+    }
+
+    // PASSWORD VALIDATION
+    if (
+      state.loginPassword.length <= 5 
+    ) {
+
+      errors.loginPassword =
+        "Password must be at least 5 characters";
+    }
+
+    // ROLE VALIDATION
+    if (state.loginRole === "") {
+
+      errors.loginRole =
+        "Please select role";
+    }
+
+    // SET ERRORS
+    dispatch({
+      type: "SET_ERRORS",
+      payload: errors,
+    });
+
+    // STOP API IF ERROR EXISTS
+    if (
+      Object.keys(errors).length > 0
+    ) {
+
+      return;
+    }
+
     const loginData = {
-      phonenumber: loginPhone,
-      password: loginPassword,
-      role: loginRole.toLowerCase(),
+
+      phonenumber: state.loginPhone,
+
+      password: state.loginPassword,
+
+      role:
+        state.loginRole.toLowerCase(),
     };
 
     try {
@@ -118,7 +312,8 @@ const Authupage = () => {
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
           body: JSON.stringify(loginData),
@@ -130,7 +325,8 @@ const Authupage = () => {
       if (data.status === true) {
 
         toast.success(
-          data.message || "Login Successful"
+          data.message ||
+          "Login Successful"
         );
 
         localStorage.clear();
@@ -165,11 +361,15 @@ const Authupage = () => {
 
         }, 1000);
 
+        dispatch({
+          type: "CLEAR_LOGIN",
+        });
+
       } else {
 
-        // BACKEND ERROR MESSAGE
         toast.error(
-          data.message || "Invalid Credentials"
+          data.message ||
+          "Invalid Credentials"
         );
       }
 
@@ -179,19 +379,18 @@ const Authupage = () => {
 
       toast.error("Server Error");
     }
-
-    // CLEAR LOGIN FIELDS
-    setLoginPhone("");
-    setLoginPassword("");
-    setLoginRole("");
   };
 
 
 
   return (
+
     <div className="main-container">
 
-      <div className={`container ${active ? "active" : ""}`}>
+      <div
+        className={`container ${active ? "active" : ""
+          }`}
+      >
 
         {/* ================= LOGIN ================= */}
         <div className="form-container sign-in">
@@ -200,42 +399,91 @@ const Authupage = () => {
 
             <h1>Login</h1>
 
+            {/* PHONE */}
             <div className="input-group">
 
               <input
-                type="tel"
-                value={loginPhone}
+                type="number"
+                maxLength={10}
+                value={state.loginPhone}
                 onChange={(e) =>
-                  setLoginPhone(e.target.value)
+                  dispatch({
+                    type: "SET_FIELD",
+
+                    field: "loginPhone",
+
+                    value: e.target.value,
+                  })
                 }
                 required
               />
 
-              <label>Phone Number</label>
+              <label>
+                Phone Number
+              </label>
+
+              <span className="error">
+
+                {
+                  state.errors
+                    .loginPhone
+                }
+
+              </span>
 
             </div>
 
+            {/* PASSWORD */}
             <div className="input-group">
 
               <input
                 type="password"
-                value={loginPassword}
+                value={
+                  state.loginPassword
+                }
                 onChange={(e) =>
-                  setLoginPassword(e.target.value)
+                  dispatch({
+                    type: "SET_FIELD",
+
+                    field:
+                      "loginPassword",
+
+                    value:
+                      e.target.value,
+                  })
                 }
                 required
               />
 
-              <label>Password</label>
+              <label>
+                Password
+              </label>
+
+              <span className="error">
+
+                {
+                  state.errors
+                    .loginPassword
+                }
+
+              </span>
 
             </div>
 
+            {/* ROLE */}
             <div className="input-group">
 
               <select
-                value={loginRole}
+                value={state.loginRole}
                 onChange={(e) =>
-                  setLoginRole(e.target.value)
+                  dispatch({
+                    type: "SET_FIELD",
+
+                    field: "loginRole",
+
+                    value:
+                      e.target.value,
+                  })
                 }
                 required
               >
@@ -258,10 +506,21 @@ const Authupage = () => {
 
               </select>
 
+              <span className="error">
+
+                {
+                  state.errors
+                    .loginRole
+                }
+
+              </span>
+
             </div>
 
             <button type="submit">
+
               Login
+
             </button>
 
             <p className="switch-text">
@@ -269,9 +528,13 @@ const Authupage = () => {
               Don't have an account?{" "}
 
               <span
-                onClick={() => setActive(true)}
+                onClick={() =>
+                  setActive(true)
+                }
               >
+
                 Sign Up
+
               </span>
 
             </p>
@@ -285,87 +548,189 @@ const Authupage = () => {
         {/* ================= REGISTER ================= */}
         <div className="form-container sign-up">
 
-          <form onSubmit={handleRegister}>
+          <form
+            onSubmit={handleRegister}
+          >
 
             <h1>Register</h1>
 
+            {/* NAME */}
             <div className="input-group">
 
               <input
                 type="text"
-                value={name}
+                value={state.name}
                 onChange={(e) =>
-                  setName(e.target.value)
+                  dispatch({
+                    type: "SET_FIELD",
+
+                    field: "name",
+
+                    value:
+                      e.target.value,
+                  })
                 }
                 required
               />
 
-              <label>Your Name</label>
+              <label>
+                Your Name
+              </label>
+
+              <span className="error">
+
+                {
+                  state.errors.name
+                }
+
+              </span>
 
             </div>
 
+            {/* PHONE */}
+            <div className="input-group">
+
+              <input
+                type="number"
+                maxLength={10}
+                value={state.phone}
+                onChange={(e) =>
+                  dispatch({
+                    type: "SET_FIELD",
+
+                    field: "phone",
+
+                    value: e.target.value,
+                  })
+                }
+                required
+              />
+              <label>
+                Phone Number
+              </label>
+
+              <span className="error">
+
+                {
+                  state.errors.phone
+                }
+
+              </span>
+
+            </div>
+
+            {/* ADDRESS */}
             <div className="input-group">
 
               <input
                 type="text"
-                value={phone}
+                value={state.address}
                 onChange={(e) =>
-                  setPhone(e.target.value)
+                  dispatch({
+                    type: "SET_FIELD",
+
+                    field: "address",
+
+                    value:
+                      e.target.value,
+                  })
                 }
                 required
               />
 
-              <label>Phone Number</label>
+              <label>
+                Address
+              </label>
 
-            </div>
+              <span className="error">
 
-            <div className="input-group">
-
-              <input
-                type="text"
-                value={address}
-                onChange={(e) =>
-                  setAddress(e.target.value)
+                {
+                  state.errors
+                    .address
                 }
-                required
-              />
 
-              <label>Address</label>
+              </span>
 
             </div>
 
+            {/* PASSWORD */}
             <div className="input-group">
 
               <input
                 type="password"
-                value={password}
+                value={
+                  state.password
+                }
                 onChange={(e) =>
-                  setPassword(e.target.value)
+                  dispatch({
+                    type: "SET_FIELD",
+
+                    field:
+                      "password",
+
+                    value:
+                      e.target.value,
+                  })
                 }
                 required
               />
 
-              <label>Password</label>
+              <label>
+                Password
+              </label>
+
+              <span className="error">
+
+                {
+                  state.errors
+                    .password
+                }
+
+              </span>
 
             </div>
 
+            {/* CONFIRM PASSWORD */}
             <div className="input-group">
 
               <input
                 type="password"
-                value={confirmPassword}
+                value={
+                  state.confirmPassword
+                }
                 onChange={(e) =>
-                  setConfirmPassword(e.target.value)
+                  dispatch({
+                    type: "SET_FIELD",
+
+                    field:
+                      "confirmPassword",
+
+                    value:
+                      e.target.value,
+                  })
                 }
                 required
               />
 
-              <label>Confirm Password</label>
+              <label>
+                Confirm Password
+              </label>
+
+              <span className="error">
+
+                {
+                  state.errors
+                    .confirmPassword
+                }
+
+              </span>
 
             </div>
 
             <button type="submit">
+
               Register
+
             </button>
 
             <p className="switch-text">
@@ -373,9 +738,13 @@ const Authupage = () => {
               Already have an account?{" "}
 
               <span
-                onClick={() => setActive(false)}
+                onClick={() =>
+                  setActive(false)
+                }
               >
+
                 Sign In
+
               </span>
 
             </p>
@@ -394,12 +763,13 @@ const Authupage = () => {
             {/* LOGIN SIDE */}
             <div className="toggle-panel toggle-right">
 
-              <h1>WELCOME BACK!</h1>
+              <h1>
+                WELCOME BACK!
+              </h1>
 
               <p>
-                We are happy to have you with us
-                again. If you need anything,
-                we are here to help.
+                We are happy to have
+                you with us again.
               </p>
 
             </div>
@@ -407,12 +777,13 @@ const Authupage = () => {
             {/* REGISTER SIDE */}
             <div className="toggle-panel toggle-left">
 
-              <h1>WELCOME!</h1>
+              <h1>
+                WELCOME!
+              </h1>
 
               <p>
-                We're delighted to have you here.
-                If you need any assistance,
-                feel free to reach out.
+                We're delighted to
+                have you here.
               </p>
 
             </div>
