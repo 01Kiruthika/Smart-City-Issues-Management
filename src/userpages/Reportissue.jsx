@@ -115,19 +115,6 @@ const Reportissue = () => {
     const storedUserName =
       localStorage.getItem("name");
 
-    // if (!userId || !token) {
-
-    //   toast.error(
-    //     "Session expired. Please login again."
-    //   );
-
-    //   navigate("/");
-
-    //   setSubmitting(false);
-
-    //   return;
-    // }
-
     // SEND USER NAME ALSO
     const complaintData = {
 
