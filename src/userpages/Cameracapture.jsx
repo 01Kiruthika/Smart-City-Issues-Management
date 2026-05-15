@@ -25,25 +25,35 @@ const Cameracapture = ({ setImage }) => {
 
     try {
 
-      // STOP OLD STREAM
+      // STOP OLD CAMERA
       if (streamRef.current) {
 
-        streamRef.current
-          .getTracks()
-          .forEach((track) => track.stop());
-      }
-
-      const stream =
-        await navigator.mediaDevices.getUserMedia({
-
-          video: {
-            facingMode: mode,
-          },
-
-          audio: false,
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
         });
 
+      }
+
+      // GET NEW STREAM
+      const stream = await navigator.mediaDevices.getUserMedia({
+
+        video: {
+          facingMode: {
+            exact: mode
+          }
+        },
+
+        audio: false,
+      });
+
       streamRef.current = stream;
+
+      // SET VIDEO SOURCE
+      if (videoRef.current) {
+
+        videoRef.current.srcObject = stream;
+
+      }
 
       setFacingMode(mode);
 
@@ -53,27 +63,52 @@ const Cameracapture = ({ setImage }) => {
 
     } catch (err) {
 
-      console.log(err);
+      console.log("Camera Error:", err);
+
+      // FALLBACK
+      try {
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+
+          video: true,
+          audio: false,
+        });
+
+        streamRef.current = stream;
+
+        if (videoRef.current) {
+
+          videoRef.current.srcObject = stream;
+
+        }
+
+        setCameraOn(true);
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
 
     }
   };
 
 
 
-  // SHOW VIDEO
-  useEffect(() => {
+  // // SHOW VIDEO
+  // useEffect(() => {
 
-    if (
-      cameraOn &&
-      videoRef.current &&
-      streamRef.current
-    ) {
+  //   if (
+  //     cameraOn &&
+  //     videoRef.current &&
+  //     streamRef.current
+  //   ) {
 
-      videoRef.current.srcObject =
-        streamRef.current;
-    }
+  //     videoRef.current.srcObject =
+  //       streamRef.current;
+  //   }
 
-  }, [cameraOn]);
+  // }, [cameraOn]);
 
 
 
@@ -113,17 +148,16 @@ const Cameracapture = ({ setImage }) => {
 
 
 
-  // SWITCH CAMERA
-  const switchCamera = () => {
+  const switchCamera = async () => {
 
     const newMode =
       facingMode === "user"
         ? "environment"
         : "user";
 
-    startCamera(newMode);
-  };
+    await startCamera(newMode);
 
+  };
 
 
   // RETAKE PHOTO
