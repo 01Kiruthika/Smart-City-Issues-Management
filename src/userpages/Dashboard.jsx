@@ -97,7 +97,7 @@ const Dashboard = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="row mt-4">
+      <div className="row mt-4 gy-4">
 
         {isEmpty ? (
           <div style={{
@@ -116,53 +116,56 @@ const Dashboard = () => {
         ) : (
           <>
             {/* Pie Chart */}
-            <div className="col-md-6 chart-box">
-              <div style={{ height: "300px" }}>
+            <div className="full-chart">
+
+              <div className="col-md-6 chart-box">
+                <div style={{ height: "280px" }}>
+                  <h3 style={{ textAlign: "center" }}>
+                    Complaint Status Overview
+                  </h3>
+
+                  <ResponsivePie
+                    data={chartData}
+                    margin={{ top: 30, right: 80, bottom: 50, left: 80 }}
+                    innerRadius={0.4}
+                    padAngle={2}
+                    cornerRadius={5}
+                    activeOuterRadiusOffset={10}
+                    colors={{ scheme: "set1" }}
+                    borderWidth={2}
+                    borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
+                    arcLabelsSkipAngle={10}
+                    arcLabelsTextColor="#fff"
+                  />
+                </div>
+              </div>
+
+              {/* Bar Chart */}
+              <div className="col-md-6 chart-box">
                 <h3 style={{ textAlign: "center" }}>
-                  Complaint Status Overview
+                  Complaint Comparison
                 </h3>
 
-                <ResponsivePie
-                  data={chartData}
-                  margin={{ top: 10, right: 80, bottom: 80, left: 80 }}
-                  innerRadius={0.4}
-                  padAngle={2}
-                  cornerRadius={5}
-                  activeOuterRadiusOffset={10}
-                  colors={{ scheme: "set1" }}
-                  borderWidth={2}
-                  borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
-                  arcLabelsSkipAngle={10}
-                  arcLabelsTextColor="#fff"
-                />
-              </div>
-            </div>
+                <div style={{ height: "300px" }}>
+                  <ResponsiveBar
+                    data={barData}
+                    keys={["value"]}
+                    indexBy="status"
+                    margin={{ top: 20, right: 20, bottom: 50, left: 50 }}
+                    padding={0.3}
 
-            {/* Bar Chart */}
-            <div className="col-md-6 chart-box">
-              <h3 style={{ textAlign: "center" }}>
-                Complaint Comparison
-              </h3>
+                    colors={({ data }) => {
+                      if (data.status === "Total") return "#4CAF50";
+                      if (data.status === "Pending") return "#FF9800";
+                      if (data.status === "In Progress") return "#2196F3";
+                      if (data.status === "Resolved") return "#9C27B0";
+                      return "#ccc";
+                    }}
 
-              <div style={{ height: "300px" }}>
-                <ResponsiveBar
-                  data={barData}
-                  keys={["value"]}
-                  indexBy="status"
-                  margin={{ top: 20, right: 20, bottom: 50, left: 50 }}
-                  padding={0.3}
-
-                  colors={({ data }) => {
-                    if (data.status === "Total") return "#4CAF50";
-                    if (data.status === "Pending") return "#FF9800";
-                    if (data.status === "In Progress") return "#2196F3";
-                    if (data.status === "Resolved") return "#9C27B0";
-                    return "#ccc";
-                  }}
-
-                  axisBottom={{ tickRotation: -20 }}
-                  enableLabel={false}
-                />
+                    axisBottom={{ tickRotation: -20 }}
+                    enableLabel={false}
+                  />
+                </div>
               </div>
             </div>
           </>

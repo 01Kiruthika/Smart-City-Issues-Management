@@ -6,8 +6,7 @@ import {
 } from "react";
 
 import {
-  useLocation,
-  useNavigate
+  useLocation
 } from "react-router-dom";
 
 import { UserName } from "../App.jsx";
@@ -37,9 +36,6 @@ const Reportissue = () => {
   const locationData =
     useLocation();
 
-  const navigate =
-    useNavigate();
-
   const [editId, setEditId] =
     useState(null);
 
@@ -50,6 +46,10 @@ const Reportissue = () => {
     useState("");
 
   const [image, setImage] =
+    useState(null);
+
+  // IMAGE PREVIEW
+  const [previewImage, setPreviewImage] =
     useState("");
 
   // LOADING STATE
@@ -58,6 +58,8 @@ const Reportissue = () => {
 
   const fileInputRef =
     useRef(null);
+
+
 
   // LOAD EDIT DATA
   useEffect(() => {
@@ -71,7 +73,7 @@ const Reportissue = () => {
 
       setLocation(c.location || "");
 
-      setImage(c.proof || "");
+      setPreviewImage(c.proof || "");
 
       setEditId(c._id);
 
@@ -81,12 +83,16 @@ const Reportissue = () => {
 
       setLocation("");
 
-      setImage("");
+      setImage(null);
+
+      setPreviewImage("");
 
       setEditId(null);
     }
 
   }, [locationData.state]);
+
+
 
   // SUBMIT FUNCTION
   const handleSubmit = async (e) => {
@@ -98,39 +104,73 @@ const Reportissue = () => {
 
     // VALIDATION
     if (!title.trim()) {
-      toast.warning("Issue title is required");
+
+      toast.warning(
+        "Issue title is required"
+      );
+
       return;
     }
 
     if (!location.trim()) {
-      toast.warning("Location is required");
+
+      toast.warning(
+        "Location is required"
+      );
+
       return;
     }
 
     setSubmitting(true);
 
-    const token =
-      localStorage.getItem("token");
-
     const storedUserName =
       localStorage.getItem("name");
 
-    // SEND USER NAME ALSO
-    const complaintData = {
 
-      user_id: userId,
 
-      user_name:
-        storedUserName || currentUserName,
+    // FORM DATA
+    const formData =
+      new FormData();
 
-      title,
+    formData.append(
+      "user_id",
+      userId
+    );
 
-      location,
+    formData.append(
+      "user_name",
+      storedUserName ||
+      currentUserName
+    );
 
-      proof: image,
+    formData.append(
+      "title",
+      title
+    );
 
-      status: "Pending",
-    };
+    formData.append(
+      "location",
+      location
+    );
+
+    formData.append(
+      "status",
+      "Pending"
+    );
+
+
+
+    // IMAGE FILE
+    if (image) {
+
+      formData.append(
+        "proof",
+        image
+      );
+
+    }
+
+
 
     try {
 
@@ -138,6 +178,8 @@ const Reportissue = () => {
         `${API.BASE_URL}/complaint`;
 
       let method = "POST";
+
+
 
       // EDIT MODE
       if (editId) {
@@ -148,23 +190,23 @@ const Reportissue = () => {
         method = "PUT";
       }
 
+
+
       const response =
         await authFetch(url, {
 
           method,
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify(
-            complaintData
-          ),
+          // DON'T ADD CONTENT-TYPE
+          body: formData,
         });
 
-      const data =
-        await response.json();
+
+      const text = await response.text();
+
+      console.log(text);
+
+
 
       if (response.ok) {
 
@@ -175,18 +217,25 @@ const Reportissue = () => {
             : "Complaint Submitted Successfully"
         );
 
+
+
         // RESET FORM
         setTitle("");
 
         setLocation("");
 
-        setImage("");
+        setImage(null);
+
+        setPreviewImage("");
 
         setEditId(null);
 
+
+
         if (fileInputRef.current) {
 
-          fileInputRef.current.value = "";
+          fileInputRef.current.value =
+            "";
         }
 
       } else {
@@ -204,13 +253,17 @@ const Reportissue = () => {
         error
       );
 
-      toast.error("Server Error");
+      toast.error(
+        "Server Error"
+      );
 
     } finally {
 
       setSubmitting(false);
     }
   };
+
+
 
   return (
 
@@ -219,45 +272,66 @@ const Reportissue = () => {
       <div className="report-head">
 
         <h2>
+
           {editId
             ? "Edit Issue"
             : "Report Issue"}
+
         </h2>
 
       </div>
+
+
 
       <div className="report-wrapper">
 
         <div className="report-card">
 
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={
+              handleSubmit
+            }
+          >
 
             <h3 className="report-subtitle">
+
               Describe the Problem
+
             </h3>
 
-            {/* VOICE INPUT */}
-            <div className="voice-row">
 
-              <VoiceInput
-                onTextDetected={(text) =>
-                  setTitle(text)
+
+            {/* ISSUE TITLE WITH MIC */}
+            <div className="input-mic-wrapper">
+
+              <input
+                type="text"
+                placeholder="Describe your issue..."
+                value={title}
+                onChange={(e) =>
+                  setTitle(
+                    e.target.value
+                  )
                 }
+                className="input-field mic-input"
+                required
               />
+
+
+
+              <div className="mic-inside">
+
+                <VoiceInput
+                  onTextDetected={(text) =>
+                    setTitle(text)
+                  }
+                />
+
+              </div>
 
             </div>
 
-            {/* ISSUE TITLE */}
-            <input
-              type="text"
-              placeholder="Issue"
-              value={title}
-              onChange={(e) =>
-                setTitle(e.target.value)
-              }
-              className="input-field"
-              required
-            />
+
 
             {/* LOCATION */}
             <input
@@ -265,28 +339,47 @@ const Reportissue = () => {
               placeholder="Location"
               value={location}
               onChange={(e) =>
-                setLocation(e.target.value)
+                setLocation(
+                  e.target.value
+                )
               }
               className="input-field"
               required
             />
 
+
+
             {/* CAMERA SECTION */}
             <div className="camera-section">
 
               <p className="camera-text">
+
                 Upload proof of the issue
+
               </p>
 
+
+
               <Cameracapture
-                setImage={setImage}
+
+                setImage={(file) => {
+
+                  setImage(file);
+
+                  setPreviewImage(
+                    URL.createObjectURL(file)
+                  );
+                }}
+
               />
 
+
+
               {/* IMAGE PREVIEW */}
-              {image && (
+              {previewImage && (
 
                 <img
-                  src={image}
+                  src={previewImage}
                   alt="preview"
                   className="preview-img"
                   style={{
@@ -297,9 +390,12 @@ const Reportissue = () => {
                     marginTop: "10px",
                   }}
                 />
+
               )}
 
             </div>
+
+
 
             {/* SUBMIT BUTTON */}
             <button

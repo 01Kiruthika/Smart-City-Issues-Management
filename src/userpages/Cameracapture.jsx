@@ -127,21 +127,51 @@ const Cameracapture = ({ setImage }) => {
 
     ctx.drawImage(video, 0, 0);
 
-    const imageData =
-      canvas.toDataURL(
-        "image/jpeg",
-        0.5
-      );
 
-    // SAVE IMAGE
-    setCapturedImage(imageData);
 
-    setImage(imageData);
+    // CONVERT TO JPG FILE
+    canvas.toBlob(
+
+      (blob) => {
+
+        // CREATE FILE
+        const file = new File(
+          [blob],
+          "capture.jpg",
+          {
+            type: "image/jpeg",
+          }
+        );
+
+        // PREVIEW URL
+        const imageUrl =
+          URL.createObjectURL(blob);
+
+        // SHOW PREVIEW
+        setCapturedImage(imageUrl);
+
+        // SEND FILE TO PARENT
+        setImage(file);
+
+      },
+
+      "image/jpeg",
+
+      0.7
+    );
+
+
 
     // STOP CAMERA
-    streamRef.current
-      .getTracks()
-      .forEach((track) => track.stop());
+    if (streamRef.current) {
+
+      streamRef.current
+        .getTracks()
+        .forEach((track) =>
+          track.stop()
+        );
+
+    }
 
     setCameraOn(false);
   };
