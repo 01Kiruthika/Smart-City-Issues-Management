@@ -27,8 +27,6 @@ import {
   toast
 } from "react-toastify";
 
-
-
 const Mycomplaints = () => {
 
   const navigate =
@@ -40,16 +38,72 @@ const Mycomplaints = () => {
   const [loading, setLoading] =
     useState(true);
 
+  const [language, setLanguage] =
+    useState(
+      localStorage.getItem("language") || "en"
+    );
+  useEffect(() => {
 
+    const handleLanguageChange = () => {
+
+      setLanguage(
+        localStorage.getItem("language") || "en"
+      );
+    };
+
+    window.addEventListener(
+      "languageChanged",
+      handleLanguageChange
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "languageChanged",
+        handleLanguageChange
+      );
+    };
+
+  }, []);
+  // TRANSLATIONS
+  const translations = {
+
+    en: {
+      title: "My Complaints",
+      loading: "Loading...",
+      noComplaints: "No complaints found",
+      deleteConfirm:
+        "Do you want to delete this complaint?",
+      deleted:
+        "Deleted Successfully",
+      noTitle: "No Title",
+      pending: "Pending",
+      noLocation: "No Location",
+    },
+
+    ta: {
+      title: "என் புகார்கள்",
+      loading: "ஏற்றப்படுகிறது...",
+      noComplaints:
+        "புகார்கள் எதுவும் இல்லை",
+      deleteConfirm:
+        "இந்த புகாரை நீக்க விரும்புகிறீர்களா?",
+      deleted:
+        "வெற்றிகரமாக நீக்கப்பட்டது",
+      noTitle: "தலைப்பு இல்லை",
+      pending: "நிலுவையில் உள்ளது",
+      noLocation: "இடம் இல்லை",
+    },
+  };
+
+  const t =
+    translations[language];
 
   useEffect(() => {
 
     fetchMyComplaints();
 
   }, []);
-
-
-
 
   // FETCH ONLY USER COMPLAINTS
   const fetchMyComplaints = async () => {
@@ -87,15 +141,12 @@ const Mycomplaints = () => {
     }
   };
 
-
-
-
   // DELETE COMPLAINT
   const handleDelete = async (id) => {
 
     if (
       !window.confirm(
-        "Do you want to delete this complaint?"
+        t.deleteConfirm
       )
     ) return;
 
@@ -114,7 +165,7 @@ const Mycomplaints = () => {
       if (res.ok) {
 
         toast.success(
-          "Deleted Successfully"
+          t.deleted
         );
 
         // REMOVE FROM UI
@@ -132,9 +183,6 @@ const Mycomplaints = () => {
     }
   };
 
-
-
-
   // EDIT
   const handleEdit = (complaint) => {
 
@@ -146,9 +194,6 @@ const Mycomplaints = () => {
     );
   };
 
-
-
-
   return (
 
     <div className="complaint-container">
@@ -156,23 +201,23 @@ const Mycomplaints = () => {
       <div className="complaint-head">
 
         <h2>
-          My Complaints
+          {t.title}
         </h2>
 
       </div>
-
-
 
       <div className="card-grid">
 
         {loading ? (
 
-          <p>Loading...</p>
+          <p>
+            {t.loading}
+          </p>
 
         ) : complaints.length === 0 ? (
 
           <p>
-            No complaints found
+            {t.noComplaints}
           </p>
 
         ) : (
@@ -188,22 +233,22 @@ const Mycomplaints = () => {
 
                 image={
                   c.proof ||
-                  "https://via.placeholder.com/150"
+                  `https://picsum.photos/300/200?random=${c._id}`
                 }
 
                 title={
                   c.title ||
-                  "No Title"
+                  t.noTitle
                 }
 
                 status={
                   c.status ||
-                  "Pending"
+                  t.pending
                 }
 
                 location={
                   c.location ||
-                  "No Location"
+                  t.noLocation
                 }
 
                 date={
@@ -217,19 +262,14 @@ const Mycomplaints = () => {
 
                 actions={
                   <>
-
                     <button
                       onClick={() =>
                         handleEdit(c)
                       }
                       className="edit-btn"
                     >
-
                       <FaEdit />
-
                     </button>
-
-
 
                     <button
                       onClick={() =>
@@ -237,11 +277,8 @@ const Mycomplaints = () => {
                       }
                       className="delete-btn"
                     >
-
                       <FaTrash />
-
                     </button>
-
                   </>
                 }
               />

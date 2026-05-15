@@ -444,54 +444,26 @@ const Header = () => {
         >
 
           <button
-            onClick={() =>
-              changeLanguage("ta")
-            }
-            style={{
-              padding: "6px 12px",
-              borderRadius: "20px",
-              border: "none",
-              cursor: "pointer",
+            onClick={() => {
 
-              background:
-                language === "ta"
-                  ? "#2563eb"
-                  : "#ddd",
+              localStorage.setItem("language", "ta");
 
-              color:
-                language === "ta"
-                  ? "white"
-                  : "black",
-
-              fontWeight: "600",
+              window.dispatchEvent(
+                new Event("languageChanged")
+              );
             }}
           >
             தமிழ்
           </button>
 
-
-
           <button
-            onClick={() =>
-              changeLanguage("en")
-            }
-            style={{
-              padding: "6px 12px",
-              borderRadius: "20px",
-              border: "none",
-              cursor: "pointer",
+            onClick={() => {
 
-              background:
-                language === "en"
-                  ? "#2563eb"
-                  : "#ddd",
+              localStorage.setItem("language", "en");
 
-              color:
-                language === "en"
-                  ? "white"
-                  : "black",
-
-              fontWeight: "600",
+              window.dispatchEvent(
+                new Event("languageChanged")
+              );
             }}
           >
             English

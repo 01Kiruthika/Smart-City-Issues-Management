@@ -36,6 +36,90 @@ const Reportissue = () => {
   const locationData =
     useLocation();
 
+  const [language, setLanguage] =
+    useState(
+      localStorage.getItem("language") || "en"
+    );
+
+  useEffect(() => {
+
+    const handleLanguageChange = () => {
+
+      setLanguage(
+        localStorage.getItem("language") || "en"
+      );
+    };
+
+    window.addEventListener(
+      "languageChanged",
+      handleLanguageChange
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "languageChanged",
+        handleLanguageChange
+      );
+    };
+
+  }, []);
+
+  const text = {
+
+    en: {
+      heading: "Report Issue",
+      edit: "Edit Issue",
+      describe: "Describe the Problem",
+      issuePlaceholder:
+        "Your Issue",
+      locationPlaceholder:
+        "Location",
+      upload:
+        "Upload proof of the issue",
+      submit: "Submit Issue",
+      update: "Update Issue",
+      submitting: "Submitting...",
+      titleRequired:
+        "Issue title is required",
+      locationRequired:
+        "Location is required",
+      success:
+        "Complaint Submitted Successfully",
+      updateSuccess:
+        "Complaint Updated Successfully",
+    },
+
+    ta: {
+      heading: "புகார் பதிவு",
+      edit: "புகாரை திருத்து",
+      describe:
+        "பிரச்சனையை விவரிக்கவும்",
+      issuePlaceholder:
+        "உங்கள் பிரச்சனை",
+      locationPlaceholder:
+        "இடம்",
+      upload:
+        "பிரச்சனையின் புகைப்படத்தை பதிவேற்றவும்",
+      submit:
+        "புகாரை சமர்ப்பிக்கவும்",
+      update:
+        "புகாரை புதுப்பிக்கவும்",
+      submitting:
+        "சமர்ப்பிக்கப்படுகிறது...",
+      titleRequired:
+        "பிரச்சனை தலைப்பு தேவை",
+      locationRequired:
+        "இடம் தேவை",
+      success:
+        "புகார் வெற்றிகரமாக பதிவு செய்யப்பட்டது",
+      updateSuccess:
+        "புகார் வெற்றிகரமாக புதுப்பிக்கப்பட்டது",
+    },
+  };
+
+  const t = text[language];
+
   const [editId, setEditId] =
     useState(null);
 
@@ -58,8 +142,6 @@ const Reportissue = () => {
 
   const fileInputRef =
     useRef(null);
-
-
 
   // LOAD EDIT DATA
   useEffect(() => {
@@ -92,8 +174,6 @@ const Reportissue = () => {
 
   }, [locationData.state]);
 
-
-
   // SUBMIT FUNCTION
   const handleSubmit = async (e) => {
 
@@ -106,7 +186,7 @@ const Reportissue = () => {
     if (!title.trim()) {
 
       toast.warning(
-        "Issue title is required"
+        t.titleRequired
       );
 
       return;
@@ -115,7 +195,7 @@ const Reportissue = () => {
     if (!location.trim()) {
 
       toast.warning(
-        "Location is required"
+        t.locationRequired
       );
 
       return;
@@ -125,8 +205,6 @@ const Reportissue = () => {
 
     const storedUserName =
       localStorage.getItem("name");
-
-
 
     // FORM DATA
     const formData =
@@ -158,8 +236,6 @@ const Reportissue = () => {
       "Pending"
     );
 
-
-
     // IMAGE FILE
     if (image) {
 
@@ -167,10 +243,7 @@ const Reportissue = () => {
         "proof",
         image
       );
-
     }
-
-
 
     try {
 
@@ -178,8 +251,6 @@ const Reportissue = () => {
         `${API.BASE_URL}/complaint`;
 
       let method = "POST";
-
-
 
       // EDIT MODE
       if (editId) {
@@ -190,8 +261,6 @@ const Reportissue = () => {
         method = "PUT";
       }
 
-
-
       const response =
         await authFetch(url, {
 
@@ -201,23 +270,17 @@ const Reportissue = () => {
           body: formData,
         });
 
-
-      const text = await response.text();
-
-      console.log(text);
-
-
+      const data =
+        await response.json();
 
       if (response.ok) {
 
         toast.success(
 
           editId
-            ? "Complaint Updated Successfully"
-            : "Complaint Submitted Successfully"
+            ? t.updateSuccess
+            : t.success
         );
-
-
 
         // RESET FORM
         setTitle("");
@@ -229,8 +292,6 @@ const Reportissue = () => {
         setPreviewImage("");
 
         setEditId(null);
-
-
 
         if (fileInputRef.current) {
 
@@ -263,8 +324,6 @@ const Reportissue = () => {
     }
   };
 
-
-
   return (
 
     <>
@@ -274,14 +333,12 @@ const Reportissue = () => {
         <h2>
 
           {editId
-            ? "Edit Issue"
-            : "Report Issue"}
+            ? t.edit
+            : t.heading}
 
         </h2>
 
       </div>
-
-
 
       <div className="report-wrapper">
 
@@ -295,18 +352,18 @@ const Reportissue = () => {
 
             <h3 className="report-subtitle">
 
-              Describe the Problem
+              {t.describe}
 
             </h3>
-
-
 
             {/* ISSUE TITLE WITH MIC */}
             <div className="input-mic-wrapper">
 
               <input
                 type="text"
-                placeholder="Describe your issue..."
+                placeholder={
+                  t.issuePlaceholder
+                }
                 value={title}
                 onChange={(e) =>
                   setTitle(
@@ -316,8 +373,6 @@ const Reportissue = () => {
                 className="input-field mic-input"
                 required
               />
-
-
 
               <div className="mic-inside">
 
@@ -331,12 +386,12 @@ const Reportissue = () => {
 
             </div>
 
-
-
             {/* LOCATION */}
             <input
               type="text"
-              placeholder="Location"
+              placeholder={
+                t.locationPlaceholder
+              }
               value={location}
               onChange={(e) =>
                 setLocation(
@@ -347,18 +402,14 @@ const Reportissue = () => {
               required
             />
 
-
-
             {/* CAMERA SECTION */}
             <div className="camera-section">
 
               <p className="camera-text">
 
-                Upload proof of the issue
+                {t.upload}
 
               </p>
-
-
 
               <Cameracapture
 
@@ -372,8 +423,6 @@ const Reportissue = () => {
                 }}
 
               />
-
-
 
               {/* IMAGE PREVIEW */}
               {previewImage && (
@@ -395,8 +444,6 @@ const Reportissue = () => {
 
             </div>
 
-
-
             {/* SUBMIT BUTTON */}
             <button
               type="submit"
@@ -405,10 +452,10 @@ const Reportissue = () => {
             >
 
               {submitting
-                ? "Submitting..."
+                ? t.submitting
                 : editId
-                  ? "Update Issue"
-                  : "Submit Issue"}
+                  ? t.update
+                  : t.submit}
 
             </button>
 

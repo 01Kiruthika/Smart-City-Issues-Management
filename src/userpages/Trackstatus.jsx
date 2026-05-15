@@ -14,8 +14,6 @@ import authFetch
 import API
   from "../Backendurl.jsx";
 
-
-
 const TrackStatus = () => {
 
   const [complaints, setComplaints] =
@@ -27,17 +25,102 @@ const TrackStatus = () => {
   const [loading, setLoading] =
     useState(true);
 
+  const [language, setLanguage] =
+    useState(
+      localStorage.getItem("language") || "en"
+    );
 
 
+  useEffect(() => {
+
+    const handleLanguageChange = () => {
+
+      setLanguage(
+        localStorage.getItem("language") || "en"
+      );
+    };
+
+    window.addEventListener(
+      "languageChanged",
+      handleLanguageChange
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "languageChanged",
+        handleLanguageChange
+      );
+    };
+
+  }, []);
+
+  //  TRANSLATIONS
+  const translations = {
+
+    en: {
+      title:
+        "Track Complaint Status",
+
+      all: "All",
+
+      pending: "Pending",
+
+      inprogress:
+        "In Progress",
+
+      solved: "Solved",
+
+      loading:
+        "Loading your complaints...",
+
+      nodata:
+        "No complaints found",
+
+      noTitle:
+        "No Title",
+
+      noLocation:
+        "No Location",
+    },
+
+    ta: {
+      title:
+        "புகார் நிலையை கண்காணிக்கவும்",
+
+      all: "அனைத்தும்",
+
+      pending:
+        "நிலுவையில் உள்ளது",
+
+      inprogress:
+        "செயல்பாட்டில் உள்ளது",
+
+      solved:
+        "தீர்க்கப்பட்டது",
+
+      loading:
+        "உங்கள் புகார்கள் ஏற்றப்படுகிறது...",
+
+      nodata:
+        "புகார்கள் எதுவும் இல்லை",
+
+      noTitle:
+        "தலைப்பு இல்லை",
+
+      noLocation:
+        "இடம் இல்லை",
+    },
+  };
+
+  const t =
+    translations[language];
 
   useEffect(() => {
 
     fetchComplaints();
 
   }, []);
-
-
-
 
   // FETCH ONLY USER COMPLAINTS
   const fetchComplaints = async () => {
@@ -77,9 +160,6 @@ const TrackStatus = () => {
     }
   };
 
-
-
-
   // STATUS FILTER
   const filteredComplaints =
 
@@ -101,18 +181,13 @@ const TrackStatus = () => {
           filter.toLowerCase()
       );
 
-
-
-
   return (
 
     <div className="trackstatus">
 
       <h2>
-        Track Complaint Status
+        {t.title}
       </h2>
-
-
 
       {/* FILTER DROPDOWN */}
       <select
@@ -126,37 +201,34 @@ const TrackStatus = () => {
       >
 
         <option value="all">
-          All
+          {t.all}
         </option>
 
         <option value="Pending">
-          Pending
+          {t.pending}
         </option>
 
         <option value="InProgress">
-          In Progress
+          {t.inprogress}
         </option>
 
         <option value="Solved">
-          Solved
+          {t.solved}
         </option>
 
       </select>
-
-
-
 
       {/* LOADING */}
       {loading ? (
 
         <p className="loading">
-          Loading your complaints...
+          {t.loading}
         </p>
 
       ) : filteredComplaints.length === 0 ? (
 
         <p className="no-data">
-          No complaints found
+          {t.nodata}
         </p>
 
       ) : (
@@ -174,20 +246,24 @@ const TrackStatus = () => {
                 <ComplaintCard
 
                   image={
-                    comp.proof
+                    comp.proof ||
+
+                    `https://picsum.photos/300/200?random=${comp._id}`
                   }
 
                   title={
-                    comp.title
+                    comp.title ||
+                    t.noTitle
                   }
 
                   status={
                     comp.status ||
-                    "Pending"
+                    t.pending
                   }
 
                   location={
-                    comp.location
+                    comp.location ||
+                    t.noLocation
                   }
 
                   date={
