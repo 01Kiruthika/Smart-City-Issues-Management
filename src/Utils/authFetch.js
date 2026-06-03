@@ -1,68 +1,40 @@
-const authFetch = async (
-  url,
-  options = {}
-) => {
+const authFetch = async (url, options = {}) => {
 
-  const token =
-    localStorage.getItem("token");
+const token = localStorage.getItem("token");
 
+console.log("TOKEN:", token);
 
+const headers = {
+...(options.headers || {})
+};
 
-  const headers = {
+if (token) {
+headers.Authorization = `Bearer ${token}`;
+}
 
-    ...(options.headers || {}),
+if (!(options.body instanceof FormData)) {
+headers["Content-Type"] = "application/json";
+}
 
-  };
+const response = await fetch(url, {
+...options,
+headers
+});
 
+if (response.status === 401) {
 
+```
+localStorage.removeItem("token");
+localStorage.removeItem("userId");
+localStorage.removeItem("name");
+localStorage.removeItem("role");
 
-  // ADD TOKEN
-  if (token) {
+window.location.href = "/login";
+```
 
-    headers["Authorization"] =
-      `Bearer ${token}`;
-  }
+}
 
-
-
-  // ONLY FOR JSON REQUEST
-  if (
-    !(options.body instanceof FormData)
-  ) {
-
-    headers["Content-Type"] =
-      "application/json";
-  }
-
-
-
-  const response =
-    await fetch(url, {
-
-      ...options,
-
-      headers,
-    });
-
-
-
-  // TOKEN EXPIRED
-  if (response.status === 401) {
-
-    console.log(
-      "Token expired or invalid"
-    );
-
-    localStorage.removeItem(
-      "token"
-    );
-
-    window.location.href = "/login";
-  }
-
-
-
-  return response;
+return response;
 };
 
 export default authFetch;
