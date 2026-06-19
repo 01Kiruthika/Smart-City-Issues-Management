@@ -75,7 +75,7 @@ const Updatestatus = () => {
             );
 
             const data = await res.json();
-            
+
             if (data.status) {
                 console.log(data);
                 console.log(status);
