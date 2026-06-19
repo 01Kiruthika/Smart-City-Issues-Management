@@ -207,43 +207,14 @@ const Reportissue = () => {
       localStorage.getItem("name");
 
     // FORM DATA
-    const formData =
-      new FormData();
-
-    formData.append(
-      "user_id",
-      userId
-    );
-
-    formData.append(
-      "user_name",
-      storedUserName ||
-      currentUserName
-    );
-
-    formData.append(
-      "title",
-      title
-    );
-
-    formData.append(
-      "location",
-      location
-    );
-
-    formData.append(
-      "status",
-      "Pending"
-    );
-
-    // IMAGE FILE
-    if (image) {
-
-      formData.append(
-        "proof",
-        image
-      );
-    }
+    const complaintData = {
+      user_id: userId,
+      user_name: storedUserName || currentUserName,
+      title,
+      location,
+      status: "Pending",
+      proof: image
+    };
 
     try {
 
@@ -261,14 +232,13 @@ const Reportissue = () => {
         method = "PUT";
       }
 
-      const response =
-        await authFetch(url, {
-
-          method,
-
-          // DON'T ADD CONTENT-TYPE
-          body: formData,
-        });
+      const response = await authFetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(complaintData)
+      });
 
       const data =
         await response.json();
@@ -412,16 +382,12 @@ const Reportissue = () => {
               </p>
 
               <Cameracapture
+                setImage={(imageData) => {
 
-                setImage={(file) => {
+                  setImage(imageData);
 
-                  setImage(file);
-
-                  setPreviewImage(
-                    URL.createObjectURL(file)
-                  );
+                  setPreviewImage(imageData);
                 }}
-
               />
 
               {/* IMAGE PREVIEW */}
