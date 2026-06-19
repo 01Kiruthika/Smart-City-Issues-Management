@@ -76,9 +76,10 @@ const Updatestatus = () => {
 
             const data = await res.json();
 
+            console.log("Response:", data);
+            console.log("Image Length:", image?.length);
+
             if (data.status) {
-                console.log(data);
-                console.log(status);
 
                 setComplaints((prev) =>
                     prev.map((c) =>
@@ -98,12 +99,14 @@ const Updatestatus = () => {
                     toast.success("Status updated successfully");
                 }
 
+                setSelectedId(null);
+                setCapturedImage(null);
+
             } else {
                 toast.error(data.message);
             }
 
-            setSelectedId(null);
-            setCapturedImage(null);
+            
 
         } catch (err) {
             console.error("Update Error:", err);

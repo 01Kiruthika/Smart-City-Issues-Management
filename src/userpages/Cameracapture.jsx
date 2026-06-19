@@ -131,27 +131,23 @@ const Cameracapture = ({ setImage }) => {
 
     // CONVERT TO JPG FILE
     canvas.toBlob(
-
       (blob) => {
 
-        // CREATE FILE
-        const file = new File(
-          [blob],
-          "capture.jpg",
-          {
-            type: "image/jpeg",
-          }
-        );
-
-        // PREVIEW URL
-        const imageUrl =
-          URL.createObjectURL(blob);
-
-        // SHOW PREVIEW
+        // SHOW IMAGE PREVIEW
+        const imageUrl = URL.createObjectURL(blob);
         setCapturedImage(imageUrl);
 
-        // SEND FILE TO PARENT
-        setImage(file);
+        // CONVERT IMAGE TO BASE64
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+
+          // SEND BASE64 STRING TO PARENT
+          setImage(reader.result);
+
+        };
+
+        reader.readAsDataURL(blob);
 
       },
 
