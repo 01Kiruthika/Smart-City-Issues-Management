@@ -75,22 +75,31 @@ const Updatestatus = () => {
             );
 
             const data = await res.json();
+            
+            if (data.status) {
+                console.log(data);
+                console.log(status);
 
-            if (res.ok) {
                 setComplaints((prev) =>
                     prev.map((c) =>
                         c._id === id
-                            ? { ...c, status, completedProof: image }
+                            ? {
+                                ...c,
+                                status,
+                                completedProof: image
+                            }
                             : c
                     )
                 );
 
-                // FIXED CONDITION
-                if (status?.toLowerCase() === "solved") {
-                    toast.success("Proof submitted successfully ");
+                if (status === "Solved") {
+                    toast.success("Proof submitted successfully");
                 } else {
-                    toast.success("Status updated successfully ");
+                    toast.success("Status updated successfully");
                 }
+
+            } else {
+                toast.error(data.message);
             }
 
             setSelectedId(null);
