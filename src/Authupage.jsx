@@ -295,13 +295,9 @@ const Authupage = () => {
     }
 
     const loginData = {
-
       phonenumber: state.loginPhone,
-
       password: state.loginPassword,
-
-      role:
-        state.loginRole.toLowerCase(),
+      role: state.loginRole.toLowerCase(),
     };
 
     try {
